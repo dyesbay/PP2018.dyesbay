@@ -25,12 +25,15 @@ namespace ConsoleApplication2
             int mini = int.Parse(a[0]);
             int maxi = mini;
             int minprime=0;
+
             for (int i =1; i< a.Length; i++)
             {
                 if (int.Parse(a[i]) > maxi)
                     maxi = int.Parse(a[i]);
+
                 if (int.Parse(a[i]) <mini)
                     mini = int.Parse(a[i]);
+
                 if ((ifPrime(int.Parse(a[i]))) && ((int.Parse(a[i]) < minprime) || (minprime == 0)))
                     minprime = int.Parse(a[i]);
                 
@@ -38,8 +41,12 @@ namespace ConsoleApplication2
             }
 
             sw.WriteLine(mini);
+
             sw.WriteLine(maxi);
-            sw.WriteLine(minprime);
+
+            if (minprime != 0)
+                sw.WriteLine(minprime); 
+
             sw.Close();
 
         }
