@@ -33,6 +33,10 @@ namespace Complex
     {
         static void Main(string[] args)
         {
+            string s = Console.ReadLine();
+            string[] arr = s.Split(' ');
+
+            Complex z(int.Parse(s[0])
         }
     }
 }
