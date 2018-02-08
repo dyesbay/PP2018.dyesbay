@@ -21,7 +21,10 @@ namespace file_manager
         static bool ifDirMove = false;
         static string source = " ";
         static string target;
-        static void showlist(DirectoryInfo currentdir, int cursor)
+
+
+        //show everything inside the chosen directory, folder and files are sorted separately 
+        static void showlist(DirectoryInfo currentdir, int cursor) 
         {
             Console.BackgroundColor = ConsoleColor.Black;
 
@@ -60,6 +63,107 @@ namespace file_manager
 
         }
 
+        static void redactFile (FileInfo file)
+        {
+            Console.Clear();
+            StreamReader sr = new StreamReader(file.FullName);
+            string inside = sr.ReadToEnd();
+            sr.Close();
+            int x, y;
+            string[] lines = inside.Split('\n');
+            y = lines.Length - 1;
+            x = lines[y].Length - 2;
+            while (true)
+            {
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
+
+                Console.Clear();
+
+                for (int i =0; i<lines.Length; i++ )
+                {
+                    for (int j= 0; j <lines[i].Length; j++)
+                    {
+                        if (i==y && j==x)
+                        {
+                            Console.BackgroundColor = ConsoleColor.Gray;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                        }
+                        Console.Write(lines[i][j]);
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    Console.Write('\n');
+                }
+
+
+                ConsoleKeyInfo button = Console.ReadKey();
+                if (button.Key == ConsoleKey.UpArrow && y >= 1)
+                {
+                    y--;
+
+                    if (x >= lines[y].Length-1)
+                        x = lines[y].Length - 2;
+                    /*if (pos < lbound)
+                    {
+                        upbound--;
+                        lbound--;
+                    }*/
+                }
+                if (button.Key == ConsoleKey.DownArrow && y< lines.Length-1)
+                {
+                    y++;
+                    if (x >= lines[y].Length-1)
+                        x = lines[y].Length - 2;
+                    /*if (pos < lbound)
+                    {
+                        upbound--;
+                        lbound--;
+                    }*/
+                }
+                if (button.Key == ConsoleKey.LeftArrow )
+                {
+                    x--;
+                    if (x < 0)
+                    {
+                        if (y > 0)
+                        {
+                            y--;
+                            x = lines[y].Length-2;
+                        }
+                        else
+                            x++;
+                    } 
+                    /*if (pos < lbound)
+                    {
+                        upbound--;
+                        lbound--;
+                    }*/
+                }
+                if (button.Key == ConsoleKey.RightArrow )
+                {
+                    x++;
+                    if (x >= lines[y].Length-1)
+                    {
+                        if (y < lines.Length - 1)
+                        {
+                            y++;
+                            x = 0;
+                        }
+                        else
+                            x--;
+
+                    }
+                    /*if (pos < lbound)
+                    {
+                        upbound--;
+                        lbound--;
+                    }*/
+                }
+
+            }
+        }
+
         static void Main(string[] args)
         {
 
@@ -73,6 +177,7 @@ namespace file_manager
                 
                 showlist(maindir, pos);
                 ConsoleKeyInfo button = Console.ReadKey();
+                // script for moving the cursor through the files
                 if (button.Key == ConsoleKey.DownArrow && pos < listdirs.Length + listfiles.Length - 1)
                 {
                     pos++;
@@ -92,8 +197,10 @@ namespace file_manager
                         lbound--;
                     }
                 }
-                    if (button.Key == ConsoleKey.Escape)
+                if (button.Key == ConsoleKey.Escape)
                     break;
+
+                //script for openig the file or directory
                 if (button.Key == ConsoleKey.Enter && listdirs.Length + listfiles.Length >0)
                 {
                     if (pos < listdirs.Length)
@@ -105,15 +212,19 @@ namespace file_manager
                     }
                     else 
                     {
-                        StreamReader sr = new StreamReader(listfiles[pos-listdirs.Length].FullName);
+                        /*StreamReader sr = new StreamReader(listfiles[pos-listdirs.Length].FullName);
                         string s = sr.ReadToEnd();
                         Console.Clear();
                         Console.WriteLine(s);
-                        Console.ReadKey(); 
+                        Console.ReadKey();*/
+                        redactFile(listfiles[pos - listdirs.Length]);
+                     
 
                     }
 
                 }
+
+                //going back to parent directory
                 if (button.Key == ConsoleKey.Backspace)
                 {
                     maindir = maindir.Parent;
@@ -121,6 +232,8 @@ namespace file_manager
                     upbound = consres;
                     lbound = 0;
                 } 
+
+                //copying the file to buffer
                 if  (button.Key == ConsoleKey.C && listdirs.Length + listfiles.Length > 0)
                 {
                     if (pos + 1 > listdirs.Length)
@@ -142,6 +255,7 @@ namespace file_manager
 
                     }
                 }
+                // "cutting" the file or folder
                 if (button.Key == ConsoleKey.X && listdirs.Length + listfiles.Length > 0)
                 {
                     if (pos + 1 > listdirs.Length)
@@ -166,6 +280,8 @@ namespace file_manager
 
                     }
                 }
+
+                //pasting the copy of a file
                 if (button.Key == ConsoleKey.V && ifFileCopy && File.Exists(bufferfile.FullName))
                 {
                     target = maindir.FullName;
@@ -186,6 +302,8 @@ namespace file_manager
 
 
                 }*/
+
+                //moving the file
                 if (button.Key == ConsoleKey.V && ifFileMove && File.Exists(bufferfile.FullName))
                 {
                     target = maindir.FullName;
@@ -196,6 +314,8 @@ namespace file_manager
 
 
                 }
+
+                //moving the directory
                 if (button.Key == ConsoleKey.V && ifDirMove && Directory.Exists(bufferdir.FullName))
                 {
                     target = maindir.FullName;
@@ -206,6 +326,8 @@ namespace file_manager
 
 
                 }
+
+                // deleting the directory
                 if (button.Key == ConsoleKey.Delete)
                 {
                     if (pos + 1 > listdirs.Length)
@@ -220,7 +342,48 @@ namespace file_manager
                     }
                 }
 
+                //script for creating new file
+                if (button.Key == ConsoleKey.N)
+                {
+                    Console.Clear();
+                    while (true)
+                    {
+                        Console.WriteLine("Creating new file...");
+                        Console.WriteLine("Name your file: ");
+                        string fname = Console.ReadLine();
+                        string fpath = Path.Combine(maindir.FullName, fname);
+                        if (!File.Exists(fpath))
+                        {
+                            using (FileStream fs = File.Create(fpath))
+                            {
+                                for (byte i = 0; i < 2; i++)
+                                {
+                                    fs.WriteByte(i);
+                                }
+                            }
 
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("File with such name already exists.");
+                        }
+                    }
+                }
+                    if (button.Key == ConsoleKey.F)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Creating new folder...");
+                        Console.WriteLine("Name your folder: ");
+                        string dname = Console.ReadLine();
+                        string dpath = Path.Combine(maindir.FullName, dname);
+                        if (!Directory.Exists(dpath))
+                        {
+                            Directory.CreateDirectory(dpath);
+                        }
+                    }
+
+                
 
 
 
