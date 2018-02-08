@@ -11,13 +11,16 @@ namespace file_manager
     {
         static FileInfo bufferfile;
 
-        static bool ifFileCopy = false;
         const int consres = 23;
-        static int upbound = consres;
-        static string source = " ";
-        static DirectoryInfo bufferdir;
-        static string target;
         static int lbound = 0;
+        static int upbound = consres;
+        static DirectoryInfo bufferdir;
+        static bool ifFileCopy = false;
+        static bool ifDirCopy = false;
+        static bool ifFileMove = false;
+        static bool ifDirMove = false;
+        static string source = " ";
+        static string target;
         static void showlist(DirectoryInfo currentdir, int cursor)
         {
             Console.BackgroundColor = ConsoleColor.Black;
@@ -125,23 +128,98 @@ namespace file_manager
                         source = maindir.FullName;
                         bufferfile = listfiles[pos - listdirs.Length];
                         ifFileCopy = true;
+                        ifDirCopy = false;
+                        ifFileMove = false;
+                        ifDirMove = false;
 
                     }
                     else
                     {
+                        ifDirCopy = true;
                         ifFileCopy = false;
+                        bufferdir = listdirs[pos];
+                        source = maindir.FullName;
+
                     }
                 }
-                if (button.Key == ConsoleKey.V && ifFileCopy)
+                if (button.Key == ConsoleKey.X && listdirs.Length + listfiles.Length > 0)
+                {
+                    if (pos + 1 > listdirs.Length)
+                    {
+                        source = maindir.FullName;
+                        bufferfile = listfiles[pos - listdirs.Length];
+                        ifFileCopy = false;
+                        ifDirCopy = false;
+                        ifFileMove = true;
+                        ifDirMove = false;
+
+                    }
+                    else
+                    {
+                        ifDirCopy = false;
+                        ifFileCopy = false;
+                        ifFileMove = false;
+                        ifDirMove = true;
+
+                        bufferdir = listdirs[pos];
+                        source = maindir.FullName;
+
+                    }
+                }
+                if (button.Key == ConsoleKey.V && ifFileCopy && File.Exists(bufferfile.FullName))
                 {
                     target = maindir.FullName;
                     string filename = bufferfile.Name;
-                    string sourcefile = System.IO.Path.Combine(source, filename);
-                    string targetfile = System.IO.Path.Combine(target, filename);
-                    System.IO.File.Copy(sourcefile, targetfile, true);
+                    string sourcefile = Path.Combine(source, filename);
+                    string targetfile = Path.Combine(target, filename);
+                    File.Copy(sourcefile, targetfile, true);
 
 
                 }
+                /*if (button.Key == ConsoleKey.V && ifDirCopy && Directory.Exists(bufferdir.FullName))
+                {
+                    target = maindir.FullName;
+                    string dirname = bufferdir.Name;
+                    string sourcedir = System.IO.Path.Combine(source, dirname);
+                    string targetdir = System.IO.Path.Combine(target, dirname);
+                    System.IO.Directory.Copy(sourcedir, targetdir, true);
+
+
+                }*/
+                if (button.Key == ConsoleKey.V && ifFileMove && File.Exists(bufferfile.FullName))
+                {
+                    target = maindir.FullName;
+                    string filename = bufferfile.Name;
+                    string sourcefile = Path.Combine(source, filename);
+                    string targetfile = Path.Combine(target, filename);
+                    System.IO.File.Move(sourcefile, targetfile);
+
+
+                }
+                if (button.Key == ConsoleKey.V && ifDirMove && Directory.Exists(bufferdir.FullName))
+                {
+                    target = maindir.FullName;
+                    string dirname = bufferdir.Name;
+                    string sourcedir = Path.Combine(source, dirname);
+                    string targetdir = Path.Combine(target, dirname);
+                    Directory.Move(sourcedir, targetdir);
+
+
+                }
+                if (button.Key == ConsoleKey.Delete)
+                {
+                    if (pos + 1 > listdirs.Length)
+                    {
+                        File.Delete( listfiles[pos - listdirs.Length].FullName);
+                        
+                    }
+                    else
+                    {
+                        Directory.Delete(listdirs[pos].FullName);
+
+                    }
+                }
+
 
 
 
