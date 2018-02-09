@@ -94,10 +94,12 @@ namespace file_manager
                         Console.BackgroundColor = ConsoleColor.Black;
                         Console.ForegroundColor = ConsoleColor.White;
                     }
+
+                    //Console.WriteLine
                     Console.Write('\n');
                 }
 
-                Console.SetCursorPosition(x, y);
+                //Console.SetCursorPosition(x, y);
 
                 //Console.Read();
 
@@ -208,6 +210,7 @@ namespace file_manager
                 if (button.Key == ConsoleKey.Backspace && x>0)
                 {
                     lines[y] = lines[y].Remove(x - 1, 1);
+                    x--;
                 }
                 if (button.Key == ConsoleKey.Delete)
                 {
@@ -303,6 +306,8 @@ namespace file_manager
                     {
                         ifDirCopy = true;
                         ifFileCopy = false;
+                        ifFileMove = false;
+                        ifDirMove = false;
                         bufferdir = listdirs[pos];
                         source = maindir.FullName;
 
