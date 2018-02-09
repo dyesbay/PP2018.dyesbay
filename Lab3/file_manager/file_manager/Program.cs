@@ -71,8 +71,8 @@ namespace file_manager
             sr.Close();
             int x, y;
             string[] lines = inside.Split('\n');
-            y = lines.Length - 1;
-            x = lines[y].Length - 2;
+            y = 0;
+            x = 0;
             while (true)
             {
                 Console.BackgroundColor = ConsoleColor.Black;
@@ -80,6 +80,7 @@ namespace file_manager
 
                 Console.Clear();
 
+              
                 for (int i =0; i<lines.Length; i++ )
                 {
                     for (int j= 0; j <lines[i].Length; j++)
@@ -96,8 +97,13 @@ namespace file_manager
                     Console.Write('\n');
                 }
 
+                Console.SetCursorPosition(x, y);
+
+                //Console.Read();
+
 
                 ConsoleKeyInfo button = Console.ReadKey();
+                
                 if (button.Key == ConsoleKey.UpArrow && y >= 1)
                 {
                     y--;
@@ -110,7 +116,7 @@ namespace file_manager
                         lbound--;
                     }*/
                 }
-                if (button.Key == ConsoleKey.DownArrow && y< lines.Length-1)
+                if (button.Key == ConsoleKey.DownArrow && y< lines.Length-2)
                 {
                     y++;
                     if (x >= lines[y].Length-1)
@@ -145,7 +151,7 @@ namespace file_manager
                     x++;
                     if (x >= lines[y].Length-1)
                     {
-                        if (y < lines.Length - 1)
+                        if (y < lines.Length - 2)
                         {
                             y++;
                             x = 0;
@@ -159,6 +165,53 @@ namespace file_manager
                         upbound--;
                         lbound--;
                     }*/
+                }
+
+                if (button.Key == ConsoleKey.Escape)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Do you want to save the changes? (y/n)");
+                    while (true)
+                    {
+                        ConsoleKeyInfo now = Console.ReadKey();
+                        if (now.Key == ConsoleKey.Y)
+                        {
+                            StreamWriter sw = new StreamWriter(file.FullName);
+                            for (int i=0; i< lines.Length; i++)
+                            {
+                                sw.WriteLine(lines[i]);
+                               
+                            }
+                            sw.Close();
+                            break;
+
+                        }
+                        if (now.Key == ConsoleKey.N)
+                            break;
+                    }
+                    break;
+                }
+
+                if (button.KeyChar >='a' && button.KeyChar <= 'z')
+                {
+                    lines[y]=lines[y].Insert(x, button.KeyChar.ToString());
+                }
+                if (button.KeyChar >= 'A' && button.KeyChar <= 'Z' )
+                {
+                    lines[y] = lines[y].Insert(x, button.KeyChar.ToString());
+                }
+                if (button.Key == ConsoleKey.Spacebar)
+                {
+                    lines[y] = lines[y].Insert(x, button.KeyChar.ToString());
+                }
+
+                if (button.Key == ConsoleKey.Backspace && x>0)
+                {
+                    lines[y] = lines[y].Remove(x - 1, 1);
+                }
+                if (button.Key == ConsoleKey.Delete)
+                {
+                    lines[y] = lines[y].Remove(x , 1);
                 }
 
             }
