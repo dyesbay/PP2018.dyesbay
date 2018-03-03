@@ -209,6 +209,16 @@ namespace PROJECT_ZMEYUGA
 
 
         }
+        public void clear()
+        {
+            foreach (Point crd in this.body)
+            {
+                Console.SetCursorPosition(crd.x, crd.y);
+
+                Console.Write(' ');
+            }
+            Console.SetCursorPosition(body[0].x, body[0].y);
+        }
         public void grow() // увеличивает змейку
         {
             Point n = new Point(body[body.Count - 1].x, body[body.Count - 1].y);
@@ -437,7 +447,8 @@ namespace PROJECT_ZMEYUGA
                 }
                 if (Pressed.Key == ConsoleKey.N)
                     break;
-            }        
+            }
+            Console.Clear();        
             
             using (FileStream fs1 = new FileStream("snake.xml", FileMode.OpenOrCreate))
             {
@@ -446,13 +457,12 @@ namespace PROJECT_ZMEYUGA
             }
             Thread thrd = new Thread(func);
             thrd.Start();
-            
+            beton.draw();
             while (true)
             {
-                Console.Clear();
                 Cobra.draw();
                 korm.draw();
-                beton.draw();
+                //beton.draw();
                 if (Cobra.Collides() || Cobra.Collides(beton))
                 {
                     thrd.Abort();
@@ -515,21 +525,29 @@ namespace PROJECT_ZMEYUGA
 
                     thrd = new Thread(func);
                     thrd.Start();
+                    Console.Clear();
+                    beton.draw();
                     Pressed = new ConsoleKeyInfo('a', ConsoleKey.Spacebar, false,false,false);
                     //break;
                     
                 }
-                Cobra.move();
 
+               
+                
+                Thread.Sleep(speed);
+
+                Cobra.clear();
+                Cobra.move();
                 //змея ест еду
                 if (Cobra.body[0].x == korm.place.x && Cobra.body[0].y == korm.place.y)
                 {
                     Cobra.grow();
+                    Console.SetCursorPosition(korm.place.x, korm.place.y);
+                    Console.Write(' ');
                     korm.generate(Cobra, beton);
 
                 }
-                
-                Thread.Sleep(speed);
+
 
             }
         }
