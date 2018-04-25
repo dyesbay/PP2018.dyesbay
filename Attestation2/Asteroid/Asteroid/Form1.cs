@@ -36,11 +36,22 @@ namespace Asteroid
             points[2] = new Point(x + 30, y + 9);
 
             g.FillPolygon(new SolidBrush(Color.Yellow), points);
-        } 
+        }
+        
+         
 
         public void drawStar2 (int x, int y)
         {
             g.FillEllipse(new SolidBrush(Color.LightGray), x, y, 25, 25);
+        }
+
+        public void drawBullet (int x, int y)
+        {
+            //g.FillEllipse(new SolidBrush(Color.Aquamarine), x, y, 50, 12);
+
+            //g.FillEllipse(new SolidBrush(Color.Aquamarine), x+19, y-19, 12, 50);
+
+            g.FillPolygon(new SolidBrush(Color.Aquamarine), new Point[8] { new Point(x, y), new Point(x+15, y-5), new Point(x+20, y-20), new Point(x+25, y-5), new Point(x+40, y), new Point(x+25, y+5), new Point(x+20, y+20), new Point(x+15, y+5) });
         }
         public void drawShip (int x,  int y)
         {
@@ -83,6 +94,7 @@ namespace Asteroid
             drawStar2(160, 40);
             drawShip(320, 170);
             g.DrawString("Score: 0", new Font(FontFamily.GenericSansSerif, 12), new SolidBrush(Color.White), 600, 10);
+            drawBullet(340, 120);
         }
     }
 }
